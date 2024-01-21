@@ -1,0 +1,16 @@
+{
+  "name": "Kaivv1/workopia-php",
+  "description": "Job listing application",
+  "authors": [
+    {
+      "name": "Kaloyan Vulchev",
+      "email": "gigoo2442@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Framework\\": "Framework/",
+      "App\\": "App/"
+    }
+  }
+}
