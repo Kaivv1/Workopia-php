@@ -1,15 +1,22 @@
 <?php
 
+namespace Framework;
+
+use App\Controllers\ErrorController;
+
 class Router
 {
   protected $routes = [];
 
-  public function registerRoute($method, $url, $controller)
+  public function registerRoute($method, $url, $action)
   {
+    list($controller, $controllerMethod) = explode('@', $action);
+
     $this->routes[] = [
       'method' => $method,
       'url' => $url,
       'controller' => $controller,
+      'controllerMethod' => $controllerMethod
     ];
   }
 
@@ -30,22 +37,40 @@ class Router
     $this->registerRoute('DELETE', $url, $controller);
   }
 
-  public function error($httpCode = 404)
-  {
-    http_response_code($httpCode);
-    loadView("error/{$httpCode}");
-    exit;
-  }
 
-
-  public function route($method, $url)
+  public function route($url)
   {
+    $requestMethod = $_SERVER['REQUEST_METHOD'];
+
     foreach ($this->routes as $route) {
-      if ($route['url'] === $url && $route['method'] === $method) {
-        require basePath('App/' . $route['controller']);
-        return;
+      $urlSegments = explode('/', trim($url, '/'));
+
+      $routeSegments = explode('/', trim($route['url'], '/'));
+      $match = true;
+
+      if (count($urlSegments) === count($routeSegments) && strtoupper($route['method'] === $requestMethod)) {
+        $params = [];
+        $match = true;
+        for ($i = 0; $i < count($urlSegments); $i++) {
+          if ($routeSegments[$i] !== $urlSegments[$i] && !preg_match('/\{(.+?)\}/', $routeSegments[$i])) {
+            $match = false;
+            break;
+          }
+
+          if (preg_match('/\{(.+?)\}/', $routeSegments[$i], $matches)) {
+            $params[$matches[1]] = $urlSegments[$i];
+          }
+        }
+        if ($match) {
+          $controller = 'App\\Controllers\\' . $route['controller'];
+          $controllerMethod = $route['controllerMethod'];
+
+          $controllerInstance = new $controller();
+          $controllerInstance->$controllerMethod($params);
+          return;
+        }
       }
     }
-    $this->error();
+    ErrorController::notFound();
   }
 }

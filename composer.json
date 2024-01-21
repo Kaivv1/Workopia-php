@@ -1,9 +1,9 @@
 {
-  "name": "Kaivv1/workopia-php",
+  "name": "kaivv1/workopia-php",
   "description": "Job listing application",
   "authors": [
     {
-      "name": "Kaloyan Vulchev",
+      "name": "kaloyan_vulchev",
       "email": "gigoo2442@gmail.com"
     }
   ],

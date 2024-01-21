@@ -47,3 +47,9 @@ function formatSalary($salary)
 {
   return '$' . number_format($salary);
 }
+
+
+function sanatize($dirty)
+{
+  return filter_var(trim($dirty), FILTER_SANITIZE_SPECIAL_CHARS);
+}
